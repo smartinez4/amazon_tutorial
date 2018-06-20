@@ -15,4 +15,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/intervencions', 'InterventionsController@index');
+
+// INTERVENCIONS
+Route::get('/intervencions', 'InterventionController@index');
+Route::get('/intervencions/{intervencio}', 'InterventionController@read');
+
+// QUIROFANS
+Route::get('/quirofans', 'QuirofanController@index');
+
+// URPA
+Route::get('/urpa', 'UrpaController@index');
