@@ -11,15 +11,9 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Database\Eloquent\Model;
 
-
 class InterventionController extends Controller
 {
-    /**
-     * @var Utilities\Transformers\InterventionTransformer
-     */
-
-    protected  $interventionTransformer;
-
+    protected $interventionTransformer;
 
     function __construct(InterventionTransformer $interventionTransformer)
     {
@@ -44,11 +38,14 @@ class InterventionController extends Controller
 
     public function read($id)
     {
+
         $intervencio = Intervention::getIntervention($id)->with('quirofan')->first();
 
-        return Response::json([
-            'data' => $this->interventionTransformer->transform($intervencio)
-        ]);
+        if (!$intervencio) {
+            return $this->respondNotFound('Intervention does not exist');
+        }
+
+        return $this->respondWithData('Query Successful', $this->interventionTransformer->transform($intervencio));
     }
 
     /*public function show(Intervention $intervencio)
