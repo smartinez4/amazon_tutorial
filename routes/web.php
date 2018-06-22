@@ -25,3 +25,6 @@ Route::get('/quirofans', 'QuirofanController@index');
 
 // URPA
 Route::get('/urpa', 'UrpaController@index');
+
+// GET ALL THE PATIENTS
+Route::get('all_patients_relatives/day/{day}/centre/{centre}', 'InterventionController@allPatientsRelatives');

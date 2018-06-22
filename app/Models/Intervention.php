@@ -10,7 +10,18 @@ class Intervention extends Model
     protected $table = 'intervencio';
     protected $primaryKey = 'Codi_procedim';
 
-    public function scopeGetIntervention($query, $id) {
+    public function scopeCheckCentre($query, $centre)
+    {
+        return $query->where('Servei', $centre);
+    }
+
+    public function scopeOfTheDay($query, $day)
+    {
+        return $query->where('Data_hora_Intervencio','like', $day.'%');
+    }
+
+    public function scopeGetIntervention($query, $id)
+    {
         return $query->where('Codi_procedim', $id);
     }
 
@@ -22,6 +33,18 @@ class Intervention extends Model
     public function urpa()
     {
         return $this->hasOne('App\Models\Urpa', 'Codi_RegURPA', 'Codi_RegURPA_interv');
+    }
+
+    public static function searchInterventions($day, $centre)
+    {
+        $interventions = Intervention::withAuxiliar()->checkCentre($centre)->ofTheDay($day)->paginate(20);
+
+        return $interventions;
+    }
+
+    public function scopeWithAuxiliar($query)
+    {
+        return $query->with(['quirofan.auxiliar_in', 'quirofan.auxiliar_out', 'urpa']);
     }
 
     public function getidQuirofanAttribute($value)

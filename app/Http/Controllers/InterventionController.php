@@ -23,16 +23,13 @@ class InterventionController extends Controller
 
     public function index()
     {
-        return false;
+        $intervencions = Intervention::withAuxiliar()->paginate(10);
 
-        $intervencions = Intervention::with('quirofan')->get();
-        //$quirofan = Quirofan::all();
+        if (!$intervencions) {
+            return $this->RespondNotFound('Could not get Interventions list');
+        }
 
-
-        return Response::json([
-            'data' => $this->interventionTransformer->transformCollection($intervencions->all())
-
-        ]);
+        return $this->respondWithData('Query Successful', $this->interventionTransformer->transformAll($intervencions));
 
     }
 
@@ -46,6 +43,17 @@ class InterventionController extends Controller
         }
 
         return $this->respondWithData('Query Successful', $this->interventionTransformer->transform($intervencio));
+    }
+
+    public function allPatientsRelatives($day, $centre)
+    {
+        $intervencions = Intervention::searchInterventions($day, $centre);
+
+        if (!$intervencions) {
+            return $this->RespondNotFound('Could not get Interventions list');
+        }
+
+        return $this->respondWithData('Query Successful', $this->interventionTransformer->transformAll($intervencions));
     }
 
     /*public function show(Intervention $intervencio)
