@@ -95,6 +95,15 @@ class TimestampChecker
         return $this->inici_cirugia_H3;
     }
 
+    public function testURPA()
+    {
+        // Metode de test per comprovar que funciona tot aixo
+        if ($this->entradaURPAH6 == null && $this->entradaQuirofanH2Real != null) {
+            $this->entradaURPAH6 = $this->entradaQuirofanH2Real;
+        }
+        return $this->entradaURPAH6;
+    }
+
 
 
 

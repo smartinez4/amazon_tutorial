@@ -39,7 +39,6 @@ class InterventionTransformer extends Transformer
             'T_sortida_URPA_H8' => $intervencio['urpa']['T_sortida_URPA_H8'],
 
             'Codi_proc_auxiliar_sortida_Temps_fi' => $intervencio['quirofan']['auxiliar_out']['Temps_fi']
-
         ];
 
     }
@@ -72,11 +71,6 @@ class InterventionTransformer extends Transformer
         return $intervencions;
     }
 
-    public function removeUnusedTimestamps($intervencio)
-    {
-
-    }
-
     public function applyChecksTimestamps($intervencio)
     {
         $timestampChecker = new TimestampChecker($intervencio);
@@ -86,9 +80,17 @@ class InterventionTransformer extends Transformer
         $intervencio['T_entrada_quirofan_H2_Real'] = $timestampChecker->checkEntradaQuirofan();
         $intervencio['T_inici_cirugia_H3'] = $timestampChecker->checkIniciCirugia();
 
+        //test
+        //$intervencio['T_entrada_URPA_H6'] = $timestampChecker->testURPA();
+
         //dd($intervencio['T_fi_cirugia_H4']);
 
         return $intervencio;
+    }
+
+    public function removeUnusedTimestamps($intervencio)
+    {
+
     }
 
 }
