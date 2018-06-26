@@ -8,6 +8,9 @@
 
 namespace App\Utilities\Transformers;
 
+use Carbon\Carbon;
+use App\Utilities\Timestamps\TimestampChecker;
+
 class InterventionTransformer extends Transformer
 {
 
@@ -38,6 +41,7 @@ class InterventionTransformer extends Transformer
             'Codi_proc_auxiliar_sortida_Temps_fi' => $intervencio['quirofan']['auxiliar_out']['Temps_fi']
 
         ];
+
     }
 
     public function transformAll($intervencions)
@@ -47,7 +51,9 @@ class InterventionTransformer extends Transformer
         //$raw = $intervencions['data'];
 
         foreach ($intervencions['data'] as &$intervencio) {
+
             $intervencio = $this->transform($intervencio);
+            $intervencio = $this->applyChecksTimestamps($intervencio);
         }
 
         //$intervencions['data'] = $raw;
@@ -64,6 +70,25 @@ class InterventionTransformer extends Transformer
 
 
         return $intervencions;
+    }
+
+    public function removeUnusedTimestamps($intervencio)
+    {
+
+    }
+
+    public function applyChecksTimestamps($intervencio)
+    {
+        $timestampChecker = new TimestampChecker($intervencio);
+        $intervencio['T_fi_cirugia_H4'] = $timestampChecker->checkFiCirugia();
+        $intervencio['Codi_proc_auxiliar_entrada_Temps_fi'] = $timestampChecker->checkBaixatQuirofan();
+        $intervencio['Codi_proc_auxiliar_sortida_Temps_fi'] = $timestampChecker->checkSeguentPacient();
+        $intervencio['T_entrada_quirofan_H2_Real'] = $timestampChecker->checkEntradaQuirofan();
+        $intervencio['T_inici_cirugia_H3'] = $timestampChecker->checkIniciCirugia();
+
+        //dd($intervencio['T_fi_cirugia_H4']);
+
+        return $intervencio;
     }
 
 }

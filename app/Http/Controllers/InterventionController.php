@@ -6,6 +6,7 @@ use App\Models\Intervention;
 use App\Models\Quirofan;
 use App\Models\Urpa;
 use App\Utilities\Transformers\InterventionTransformer;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
@@ -49,9 +50,13 @@ class InterventionController extends Controller
     {
         $intervencions = Intervention::searchInterventions($day, $centre);
 
+
         if (!$intervencions) {
             return $this->RespondNotFound('Could not get Interventions list');
         }
+
+        //\Dev::log('hola');
+        //$intervencions = $this->applyChecksTimestamps($intervencions);
 
         return $this->respondWithData('Query Successful', $this->interventionTransformer->transformAll($intervencions));
     }

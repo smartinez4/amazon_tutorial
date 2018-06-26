@@ -41,6 +41,8 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+include_once 'DevTools.class.php';
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application
