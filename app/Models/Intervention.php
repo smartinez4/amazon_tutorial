@@ -47,10 +47,17 @@ class Intervention extends Model
         return $query->with(['quirofan.auxiliar_in', 'quirofan.auxiliar_out', 'urpa']);
     }
 
-    public function getidQuirofanAttribute($value)
+    public static function searchQuirofans($day)
+    {
+        $intervencions = Intervention::withAuxiliar()->ofTheDay($day);
+
+        return $intervencions;
+    }
+
+    /*public function getidQuirofanAttribute($value)
     {
         $this->attributes['idQuirofan'] = strtolower($value);
         //return strtolower($value);
-    }
+    }*/
 
 }

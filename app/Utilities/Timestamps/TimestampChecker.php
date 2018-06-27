@@ -77,15 +77,6 @@ class TimestampChecker
         return $this->codiProcAuxiliarSortidaTempsFi;
     }
 
-    public function checkEntradaQuirofan()
-    {
-        // Si el camiller s'oblida de registrar l'entrada a quirofan, s'agafa la d'inici de cirugia
-        if ($this->entradaQuirofanH2Real == null && $this->inici_cirugia_H3 != null) {
-            $this->entradaQuirofanH2Real = $this->inici_cirugia_H3;
-        }
-        return $this->entradaQuirofanH2Real;
-    }
-
     public function checkIniciCirugia()
     {
         // Si a cirugia no registren l'inici de la cirugia, s'agafa el temps d'entrada a quirofan
