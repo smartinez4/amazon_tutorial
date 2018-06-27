@@ -1,23 +1,20 @@
 <?php
 
-use Tests\TestCase;
+namespace Tests\Feature;
 
-/**
- * Created by PhpStorm.
- * User: sergi
- * Date: 25/06/2018
- * Time: 8:31
- */
-class JsonFeatureTest extends TestCase
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class QuirofansJsonTest extends TestCase
 {
     public function testJsonStructure()
     {
-        $response = $this->json('GET', '/all_patients_relatives/day/2016-09-08/centre/HCPB?page=2');
+        $response = $this->json('GET', '/info_per_quirofan/day/2016-04-14');
 
         $response->assertJsonStructure([
             'data' => [
-                'current_page',
-                'data' => [
+                'QUI1' => [
                     '0' => [
                         'episodi_5',
                         'missatgeFam',
@@ -35,7 +32,9 @@ class JsonFeatureTest extends TestCase
                         'Codi_proc_auxiliar_sortida_Temps_creacio',
                         'T_entrada_URPA_H6',
                         'T_sortida_URPA_H8',
-                        'Codi_proc_auxiliar_sortida_Temps_fi'
+                        'Codi_proc_auxiliar_sortida_Temps_fi',
+                        'T_entrada_expected',
+                        'T_sortida_expected'
                     ]
                 ]
             ],

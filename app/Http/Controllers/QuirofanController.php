@@ -16,7 +16,7 @@ class QuirofanController extends Controller
         $this->quirofanTransformer = $quirofanTransformer;
     }
 
-    public function infoQuirofans() {
+    public function infoQuirofans($day) {
 
         if (str_contains(url()->current(), 'localhost') || str_contains(url()->current(), '127.0.0.1'))
         {
