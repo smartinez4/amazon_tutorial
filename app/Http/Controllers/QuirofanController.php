@@ -18,14 +18,14 @@ class QuirofanController extends Controller
 
     public function infoQuirofans($day) {
 
-        if (str_contains(url()->current(), 'localhost') || str_contains(url()->current(), '127.0.0.1'))
+        /*if (str_contains(url()->current(), 'localhost') || str_contains(url()->current(), '127.0.0.1'))
         {
             $day = '2016-04-13';
         }
         else
         {
             $day =  date('Y-m-d');
-        }
+        }*/
 
         $intervencions = Intervention::searchQuirofans($day)->get();
 

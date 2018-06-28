@@ -51,36 +51,11 @@ class QuirofanTransformer extends Transformer
         $intervencions = $intervencions->toArray();
         $pacientsQuirofan = [];
 
-        $delay = 0;
-        $delay_start = '';
-
         foreach ($intervencions as &$intervencio) {
 
             $intervencio['T_entrada_expected'] = '';
             $intervencio['T_sortida_expected'] = '';
-
-            if ($intervencio['quirofan']['T_entrada_quirofan_H2_Real'] != null && $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'] != null) {
-                //inicialitzem el delay amb l'ultim pacient acabat.
-                $delay_start = $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'];
-                $delay = 0;
-
-            }
-            if ($intervencio['quirofan']['T_entrada_quirofan_H2_Real'] != null && $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'] == null) {
-                //tornem a incialitzar el delay en el cas de que hi hagi un pacient en curs.
-                $delay = $intervencio['quirofan']['T_restant_quirofan_min'];
-                $delay_start = $intervencio['quirofan']['T_entrada_quirofan_H2_Real'];
-            }
-            if ($intervencio['quirofan']['T_entrada_quirofan_H2_Real'] == null && $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'] == null) {
-                if (strlen($delay_start) == 0) {
-                    //estem considerant el cas de que no s'ha fet cap pacient.
-                    $delay_start = date('Y-m-d H:i:s');
-                }
-                $intervencio['T_entrada_expected'] = date('Y-m-d H:i:s', strtotime($delay_start) + $delay * 60 + $this->turnover * 60); //li sumem el delay total i turnover de l'anterior.
-                $duration = $this->durationBetweenDatesInMin($intervencio['quirofan']['T_entrada_quirofan_H2'], $intervencio['quirofan']['T_sortida_Quirofan_H5']);
-                $intervencio['T_sortida_expected'] = date('Y-m-d H:i:s', strtotime($delay_start) + $delay * 60 + $this->turnover * 60 + $duration * 60); //
-                $delay += $this->turnover + $duration;
-
-            }
+            $this->entradaSortidaExpected($intervencio);
 
             $pacientsQuirofan[$intervencio['quirofan']['idQuirofan']][] = $this->transform($intervencio);
         }
@@ -94,5 +69,31 @@ class QuirofanTransformer extends Transformer
         return $date_after - $date_before;
     }
 
+    private function entradaSortidaExpected($intervencio)
+    {
+        $delay = 0;
+        $delay_start = '';
+        if ($intervencio['quirofan']['T_entrada_quirofan_H2_Real'] != null && $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'] != null) {
+            //inicialitzem el delay amb l'ultim pacient acabat.
+            $delay_start = $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'];
+            $delay = 0;
+        }
+        if ($intervencio['quirofan']['T_entrada_quirofan_H2_Real'] != null && $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'] == null) {
+            //tornem a incialitzar el delay en el cas de que hi hagi un pacient en curs.
+            $delay = $intervencio['quirofan']['T_restant_quirofan_min'];
+            $delay_start = $intervencio['quirofan']['T_entrada_quirofan_H2_Real'];
+        }
+        if ($intervencio['quirofan']['T_entrada_quirofan_H2_Real'] == null && $intervencio['quirofan']['T_sortida_Quirofan_H5_Real'] == null) {
+            if (strlen($delay_start) == 0) {
+                //estem considerant el cas de que no s'ha fet cap pacient.
+                $delay_start = date('Y-m-d H:i:s');
+            }
+            $intervencio['T_entrada_expected'] = date('Y-m-d H:i:s', strtotime($delay_start) + $delay * 60 + $this->turnover * 60); //li sumem el delay total i turnover de l'anterior.
+            $duration = $this->durationBetweenDatesInMin($intervencio['quirofan']['T_entrada_quirofan_H2'], $intervencio['quirofan']['T_sortida_Quirofan_H5']);
+            $intervencio['T_sortida_expected'] = date('Y-m-d H:i:s', strtotime($delay_start) + $delay * 60 + $this->turnover * 60 + $duration * 60); //
+            $delay += $this->turnover + $duration;
+        }
+        return $intervencio;
+    }
 
 }
