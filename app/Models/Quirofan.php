@@ -9,6 +9,8 @@ class Quirofan extends Model
     protected $table = 'registrequirofan';
     protected $primaryKey = 'Codi_RegQuir';
 
+    public $timestamps = false;
+
     public function intervention()
     {
         return $this->belongsTo('App\Models\Intervention', 'Codi_RegQuir', 'Codi_RegQuir_interv');

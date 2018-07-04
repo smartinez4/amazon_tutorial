@@ -10,6 +10,9 @@ class Intervention extends Model
     protected $table = 'intervencio';
     protected $primaryKey = 'Codi_procedim';
 
+    protected $fillable = ['Codi_nom_cirujia', 'updated_at', 'created_at'];
+    public $timestamps = false;
+
     public function scopeCheckCentre($query, $centre)
     {
         return $query->where('Servei', $centre);
@@ -35,6 +38,16 @@ class Intervention extends Model
         return $this->hasOne('App\Models\Urpa', 'Codi_RegURPA', 'Codi_RegURPA_interv');
     }
 
+    public function registrePre()
+    {
+        return $this->hasOne('App\Models\RegistrePre', 'Codi_RegPRE', 'Codi_RegPRE_interv');
+    }
+
+    public function pacient()
+    {
+        return $this->hasOne('App\Models\Pacient', 'id_NHC_pacient', 'Codi_NHC_Pacient');
+    }
+
     public static function searchInterventions($day, $centre)
     {
         $interventions = Intervention::withAuxiliar()->checkCentre($centre)->ofTheDay($day)->paginate(20);
@@ -53,6 +66,14 @@ class Intervention extends Model
 
         return $intervencions;
     }
+
+    /*public function insertPatient($day)
+    {
+        DB::table('intervencio')->insert(
+            [ '' => '']
+        );
+    }*/
+
 
     /*public function getidQuirofanAttribute($value)
     {
