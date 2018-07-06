@@ -32,5 +32,8 @@ Route::get('all_patients_relatives/day/{day}/centre/{centre}', 'InterventionCont
 // GET INFO QUIROFANS
 Route::get('info_per_quirofan/day/{day}', 'QuirofanController@infoQuirofans');
 
-// FAKE PATIENTS
-Route::get('create_patient/{idQuirofan}/{startTime}', 'InterventionController@createPatient');
+// CREATE FAKE INTERVENTION
+Route::get('create_intervention/{idQuirofan}/{startTime}', 'InterventionController@createIntervention');
+
+// DELETE INTERVENTION
+Route::get('delete_intervention/{Codi_procedim}', 'InterventionController@deleteIntervention');

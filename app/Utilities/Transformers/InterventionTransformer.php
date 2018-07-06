@@ -31,6 +31,7 @@ class InterventionTransformer extends Transformer
             'T_entrada_quirofan_H2' => $intervencio['quirofan']['T_entrada_quirofan_H2'],
             'T_sortida_Quirofan_H5' => $intervencio['quirofan']['T_sortida_Quirofan_H5'],
 
+            'Codi_proc_auxiliar_entrada_Temps_inici' => $intervencio['quirofan']['auxiliar_in']['Temps_inici'],
             'Codi_proc_auxiliar_entrada_Temps_fi' => $intervencio['quirofan']['auxiliar_in']['Temps_fi'],
             'Codi_proc_auxiliar_sortida_Temps_creacio' => $intervencio['quirofan']['auxiliar_out']['Temps_creacio'],
             'Codi_proc_auxiliar_sortida_Temps_inici' => $intervencio['quirofan']['auxiliar_out']['Temps_inici'],
