@@ -16,6 +16,7 @@ class QuirofanTransformer extends Transformer
 
     public function transform($intervencio)
     {
+        dd($intervencio);
         return [
             'episodi_5' => substr($intervencio['Episodi'], -5),
             'missatgeFam' => $intervencio['missatgeFam'],

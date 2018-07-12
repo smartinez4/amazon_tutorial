@@ -29,8 +29,6 @@ class QuirofanController extends Controller
 
         $intervencions = Intervention::searchQuirofans($day)->get();
 
-
-
         if (!$intervencions) {
             return $this->RespondNotFound('No patients were found');
         }

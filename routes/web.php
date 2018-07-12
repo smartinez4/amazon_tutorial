@@ -37,3 +37,9 @@ Route::get('create_intervention/{idQuirofan}/{startTime}', 'InterventionControll
 
 // DELETE INTERVENTION
 Route::get('delete_intervention/{Codi_procedim}', 'InterventionController@deleteIntervention');
+
+// RETRIEVE PATIENT
+Route::get('retrieve_patients/day/{day}/centre/{centre}', 'PatientController@retrievePatients');
+
+// TESTING
+Route::get('variables', 'PatientController@getBoxURPA');

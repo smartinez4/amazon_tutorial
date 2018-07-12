@@ -46,7 +46,7 @@ class Intervention extends Model
 
     public function pacient()
     {
-        return $this->hasOne('App\Models\Pacient', 'id_NHC_pacient', 'Codi_NHC_Pacient');
+        return $this->hasOne('App\Models\Patient', 'id_NHC_pacient', 'Codi_NHC_Pacient');
     }
 
     public static function searchInterventions($day, $centre)
@@ -68,6 +68,18 @@ class Intervention extends Model
         return $intervencions;
     }
 
+    public static function searchPatients($day)
+    {
+        $intervencions = Intervention::WithPatient()->ofTheDay($day);
+
+        return $intervencions;
+    }
+
+    public function scopeWithPatient($query)
+    {
+        return $query->with(['pacient', 'urpa']);
+    }
+
     public function createIntervention($idQuirofan, $startTime)
     {
         /**
@@ -77,7 +89,7 @@ class Intervention extends Model
         //$query = (new Intervention)->insertPatient($day);
 
         $codi_NHC = rand(0, 9999999);
-        $startTime = date('Y-m-d H:i:s', strtotime($startTime . ' + ' . rand(0, 60) . ' minutes' . ' + ' . rand(0, 23) . ' hours'));
+        $startTime = date('Y-m-d H:i:s', strtotime($startTime . ' + ' . rand(0, 60) . ' minutes' . ' + ' . rand(6, 23) . ' hours'));
 
         $auxiliar_in = new RegProcAuxiliar();
         $auxiliar_in->Temps_creacio = $startTime;
@@ -100,15 +112,15 @@ class Intervention extends Model
         $urpa->T_URPA_programat_min = rand(0, 60);
         $urpa->T_URPA_programat_planning = rand(61, 120);
         $urpa->T_entrada_URPA_H6 = date('Y-m-d H:i:s', strtotime($quirofan->T_sortida_Quirofan_H5 . ' + ' . rand(1, 3) . ' hours'));
-//        $urpa->T_sortida_URPA_H8 = date('Y-m-d H:i:s', strtotime($quirofan->T_entrada_URPA_H6 . ' + ' . rand(1, 10) . ' hours'));
+        $urpa->T_sortida_URPA_H8 = date('Y-m-d H:i:s', strtotime($quirofan->T_entrada_URPA_H6 . ' + ' . rand(1, 10) . ' hours'));
         $urpa->save();
 
         $registrePre = new RegistrePre();
         $registrePre->save();
 
-        $pacient = new Pacient();
+        $pacient = new Patient();
         $pacient->id_NHC_pacient = $codi_NHC;
-        $pacient->Nom_Pacient = 'userTest1';
+        $pacient->Nom_Pacient = 'userTest' . rand(1, 22);
         $pacient->Sala_origen = 'sala';
         $pacient->save();
 
@@ -143,8 +155,7 @@ class Intervention extends Model
             ->where('Codi_procedim', '=', $codiProcedim)->get();
         $query_interv = $query_interv->toArray();
 
-        if ($query_interv[0]->Codi_procedim == null)
-        {
+        if ($query_interv[0]->Codi_procedim == null) {
             return -1;
         }
 
@@ -163,11 +174,9 @@ class Intervention extends Model
         // Eliminamos el RegistrePre de esta intervencion
 //        $delete_regPre = DB::table('registrepre')
 //            ->where('Codi_RegPRE', '=', $query_interv[0]->Codi_RegPRE_interv)->delete();
-        if ($query_regPre != null)
-        {
+        if ($query_regPre != null) {
             $Codi_Proc_auxiliar_P = $query_regPre->toArray();
-            if ($Codi_Proc_auxiliar_P[0]->Codi_Proc_auxiliar_P != null)
-            {
+            if ($Codi_Proc_auxiliar_P[0]->Codi_Proc_auxiliar_P != null) {
                 // Eliminamos proc auxiliar si existe
 //                DB::table('regprocauxiliar')
 //                    ->where('Codi_Proc', '=', $Codi_Proc_auxiliar_P[0]->Codi_Proc_auxiliar_P)->delete();
@@ -185,24 +194,39 @@ class Intervention extends Model
 //        $delete_quir = DB::table('registrequirofan')
 //            ->where('Codi_RegQuir', '=', $query_interv[0]->Codi_RegQuir_interv)->delete();
 
-        if ($query_regQuir != null)
-        {
+        if ($query_regQuir != null) {
             $Codi_Proc_auxiliar_Q = $query_regQuir->toArray();
             echo "Codi_Proc_auxiliar_Q; ";
             echo $Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada;
-            if ($Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada != null)
-            {
+            if ($Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada != null) {
                 echo "\nWe are into the if; ";
 
+
+
                 // Eliminamos proc auxiliar si existe
-                /*$GCM_code = DB::table('usuari_cam')
-                    ->select('Registration_GCM_id')*/
+                $GCM_code = DB::table('usuari_cam')
+                    ->join('regprocauxiliar', 'usuari_cam.Nom_usuari', '=', 'regprocauxiliar.Nom_usuari_Reg')
+                    ->select('Registration_GCM_id')
+                    ->whereNotNull('regprocauxiliar.Temps_inici')
+                    //->whereNull('regprocauxiliar.Temps_fi')
+                    ->where([
+                        ['regprocauxiliar.Codi_Proc', '=', $Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada],
+                        ['usuari_cam.online', '=', 1]
+                    ])->get();
+                    /*->where('regprocauxiliar.Codi_Proc', '=', $Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada)
+                    ->where('usuari_cam.online', '=', 1)->get();*/
+
+                echo "\This is the gcm";
+                if ($GCM_code)
+                {
+                    $GCM_code = $GCM_code->toArray();
+                    dd($GCM_code);
+                }
             }
         }
 
 
-
-        dd($Codi_Proc_auxiliar_P[0]->Codi_Proc_auxiliar_P);
+        //dd($Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada);
 
 
         return $query_interv;

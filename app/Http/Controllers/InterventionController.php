@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Intervention;
-use App\Models\Pacient;
+use App\Models\Patient;
 use App\Models\Quirofan;
 use App\Models\RegistrePre;
 use App\Models\RegProcAuxiliar;
 use App\Models\Urpa;
 use App\Utilities\Transformers\InterventionTransformer;
+use App\Utilities\Transformers\PatientTransformer;
 use DB;
 
 class InterventionController extends Controller
 {
     protected $interventionTransformer;
+    protected $patientTransformer;
 
     function __construct(InterventionTransformer $interventionTransformer)
     {

@@ -72,5 +72,10 @@ class InterventionTransformer extends Transformer
         return $intervencio;
     }
 
+    public function transformPatients($patients)
+    {
+        dd($patients);
+    }
+
 
 }
