@@ -11,6 +11,7 @@ use App\Models\Urpa;
 use App\Utilities\Transformers\InterventionTransformer;
 use App\Utilities\Transformers\PatientTransformer;
 use DB;
+use Illuminate\Http\Request;
 
 class InterventionController extends Controller
 {
@@ -55,14 +56,25 @@ class InterventionController extends Controller
         return $this->respondWithData('Query Successful', $this->interventionTransformer->transformAll($intervencions));
     }
 
-    public function createIntervention($idQuirofan, $startTime)
+    public function createIntervention(Request $request)
     {
-        (new Intervention)->createIntervention($idQuirofan, $startTime);
+        (new Intervention)->createIntervention($request);
     }
 
     public function deleteIntervention($codiProcedim)
     {
         (new Intervention)->deleteIntervention($codiProcedim);
+    }
+
+    public function updateIntervencio(Request $request, $id)
+    {
+        $array = $request->input('body');
+        // $array = $request->all();
+        foreach ($array as $key=>$value)
+        {
+            if (($key && $value && $id) != null)
+            (new Intervention)->changeInterventionField($id, $key, $value);
+        }
     }
 
 }

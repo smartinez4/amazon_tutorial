@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RegProcAuxiliar extends Model
 {
-    protected $table = 'regprocauxiliar';
+    protected $table = 'RegProcAuxiliar';
     protected $primaryKey = 'Codi_Proc';
 
     public $timestamps = false;

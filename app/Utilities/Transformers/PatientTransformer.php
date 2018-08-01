@@ -14,12 +14,17 @@ class PatientTransformer extends Transformer
     {
         //dd($pacient['Codi_NHC_Pacient']);
         return [
+            'Codi_Procedim' => $pacient['Codi_procedim'],
+            'Missatge_Fam' => $pacient['missatgeFam'],
             'Codi_NHC_Pacient' => substr($pacient['Codi_NHC_Pacient'], -4),
+            'Sala_Desti' => $pacient['Sala_desti'],
 
             'Nom_Pacient' => $pacient['pacient']['Nom_Pacient'],
 
             'T_entrada_URPA_H6' => $pacient['urpa']['T_entrada_URPA_H6'],
-            'T_sortida_URPA_H8' => $pacient['urpa']['T_sortida_URPA_H8']
+            'T_sortida_URPA_H8' => $pacient['urpa']['T_sortida_URPA_H8'],
+            'Box' => $pacient['urpa']['BOX'],
+            'T_pacient_altable_H7' => $pacient['urpa']['T_pacient_altable_H7']
         ];
     }
 

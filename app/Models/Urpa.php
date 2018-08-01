@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Urpa extends Model
 {
-    protected $table = 'registreurpa';
+    protected $table = 'RegistreURPA';
     protected $primaryKey = 'Codi_RegURPA';
 
     public $timestamps = false;

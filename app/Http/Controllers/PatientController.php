@@ -34,7 +34,7 @@ class PatientController extends Controller
 
     public function getBoxURPA()
     {
-        $query_boxURPA = DB::table('variables')
+        $query_boxURPA = DB::table('Variables')
             ->select('Duracio_unix')
             ->where('Tipus_var', '=', 'boxes_URPA')->get();
 

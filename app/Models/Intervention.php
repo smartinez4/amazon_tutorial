@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Intervention extends Model
 {
 
-    protected $table = 'intervencio';
+    protected $table = 'INTERVENCIO';
     protected $primaryKey = 'Codi_procedim';
 
     protected $fillable = ['Codi_nom_cirujia', 'updated_at', 'created_at'];
@@ -80,16 +82,14 @@ class Intervention extends Model
         return $query->with(['pacient', 'urpa']);
     }
 
-    public function createIntervention($idQuirofan, $startTime)
+    public function createIntervention(Request $request)
     {
         /**
-         * Exemple URL per creacio de pacient fals: http://127.0.0.1:8000/create_intervention/QUI10/2018-07-01
+         * Exemple URL per creacio de pacient fals: http://127.0.0.1:8000/intervention/QUI10/2018-07-01
          */
 
-        //$query = (new Intervention)->insertPatient($day);
-
         $codi_NHC = rand(0, 9999999);
-        $startTime = date('Y-m-d H:i:s', strtotime($startTime . ' + ' . rand(0, 60) . ' minutes' . ' + ' . rand(6, 23) . ' hours'));
+        $startTime = date('Y-m-d H:i:s', strtotime($request->startTime . ' + ' . rand(0, 60) . ' minutes' . ' + ' . rand(6, 23) . ' hours'));
 
         $auxiliar_in = new RegProcAuxiliar();
         $auxiliar_in->Temps_creacio = $startTime;
@@ -97,7 +97,7 @@ class Intervention extends Model
         $auxiliar_in->save();
 
         $quirofan = new Quirofan();
-        $quirofan->idQuirofan = $idQuirofan;
+        $quirofan->idQuirofan = $request->idQuirofan;
         $quirofan->T_entrada_quirofan_H2 = $startTime;
         $quirofan->T_entrada_quirofan_H2_Real = date('Y-m-d H:i:s', strtotime($startTime . ' + ' . rand(1, 30) . ' minutes')); // Codi_proc_auxiliar_entrada_Temps_fi?
         $quirofan->Codi_proc_auxiliar_entrada = $auxiliar_in->Codi_Proc;
@@ -145,12 +145,12 @@ class Intervention extends Model
         $intervencio->serveis_id = rand(0, 99);
 
         $intervencio->save();
-        dd($intervencio);
+        //dd($intervencio);
     }
 
     public function deleteIntervention($codiProcedim)
     {
-        $query_interv = DB::table('intervencio')
+        $query_interv = DB::table('INTERVENCIO')
             ->select('Codi_NHC_Pacient', 'Codi_RegPRE_interv', 'Codi_RegQuir_interv', 'Codi_RegURPA_interv', 'Codi_procedim')
             ->where('Codi_procedim', '=', $codiProcedim)->get();
         $query_interv = $query_interv->toArray();
@@ -167,7 +167,7 @@ class Intervention extends Model
 
         // Comprobamos que los registros no tengan ningún Procedimiento Auxiliar asignado, si lo tienen lo eliminamos
         // A) Registre PRE
-        $query_regPre = DB::table('registrepre')
+        $query_regPre = DB::table('RegistrePRE')
             ->select('Codi_Proc_auxiliar_P')
             ->where('Codi_RegPRE', '=', $query_interv[0]->Codi_RegPRE_interv)->get();
 
@@ -185,7 +185,7 @@ class Intervention extends Model
         }
 
         // B) RegistreQuirofan
-        $query_regQuir = DB::table('registrequirofan')
+        $query_regQuir = DB::table('RegistreQuirofan')
             ->select('Codi_proc_auxiliar_entrada', 'Codi_proc_auxiliar_sortida', 'Codi_proc_auxiliar_ajuda', 'Codi_proc_auxiliar_est', 'Codi_proc_auxiliar_net')
             ->where('Codi_RegQuir', '=', $query_interv[0]->Codi_RegQuir_interv)->get();
 
@@ -202,9 +202,8 @@ class Intervention extends Model
                 echo "\nWe are into the if; ";
 
 
-
                 // Eliminamos proc auxiliar si existe
-                $GCM_code = DB::table('usuari_cam')
+                $GCM_code = DB::table('USUARI_CAM')
                     ->join('regprocauxiliar', 'usuari_cam.Nom_usuari', '=', 'regprocauxiliar.Nom_usuari_Reg')
                     ->select('Registration_GCM_id')
                     ->whereNotNull('regprocauxiliar.Temps_inici')
@@ -213,28 +212,50 @@ class Intervention extends Model
                         ['regprocauxiliar.Codi_Proc', '=', $Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada],
                         ['usuari_cam.online', '=', 1]
                     ])->get();
-                    /*->where('regprocauxiliar.Codi_Proc', '=', $Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada)
-                    ->where('usuari_cam.online', '=', 1)->get();*/
+                /*->where('regprocauxiliar.Codi_Proc', '=', $Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada)
+                ->where('usuari_cam.online', '=', 1)->get();*/
 
                 echo "\This is the gcm";
-                if ($GCM_code)
-                {
+                if ($GCM_code) {
                     $GCM_code = $GCM_code->toArray();
                     dd($GCM_code);
                 }
             }
         }
 
-
         //dd($Codi_Proc_auxiliar_Q[0]->Codi_proc_auxiliar_entrada);
-
 
         return $query_interv;
     }
 
+    public function changeInterventionField($id, $field, $newFieldData)
+    {
+        // Model by default is intervention
+        $modelInt = Intervention::find($id);
+        $modelUrpa = Urpa::find($modelInt->Codi_RegURPA_interv);
+
+        // $modelQuir = Quirofan::find($modelInt->Codi_RegQuir_interv);
+
+        if (Schema::hasColumn($modelInt->getTable(), $field))
+        {
+            $model = $modelInt;
+        }
+        else if (Schema::hasColumn($modelUrpa->getTable(), $field))
+        {
+            $model = $modelUrpa;
+        }
+        else {
+            info('This is some useful information.');
+//dd("asd");
+            $model = $modelInt;
+        }
+        $model->$field = $newFieldData;
+        $model->save();
+    }
+
     /*public function insertPatient($day)
     {
-        DB::table('intervencio')->insert(
+        DB::table('INTERVENCIO')->insert(
             [ '' => '']
         );
     }*/

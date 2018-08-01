@@ -16,30 +16,32 @@ Route::get('/', function () {
 });
 
 
-// INTERVENCIONS
-Route::get('/intervencions', 'InterventionController@index');
-Route::get('/intervencions/{intervencio}', 'InterventionController@read');
+// INTERVENTIONS
+Route::get('interventions', 'InterventionController@index');
+// Route::get('interventions/{intervencio}', 'InterventionController@read');
+Route::get('interventions/day/{day}/centre/{centre}', 'InterventionController@allPatientsRelatives');
+
+// Create new fake intervention
+Route::post('create_intervention', 'InterventionController@createIntervention');
+
+// Update intervencio field
+Route::put('intervention/{id}', 'InterventionController@updateIntervencio');
+
+// Delete intervention
+Route::delete('intervention/{Codi_procedim}', 'InterventionController@deleteIntervention');
 
 // QUIROFANS
-Route::get('/quirofans', 'QuirofanController@index');
+// Route::get('quirofans', 'QuirofanController@index');
 
 // URPA
-Route::get('/urpa', 'UrpaController@index');
-
-// GET ALL THE PATIENTS
-Route::get('all_patients_relatives/day/{day}/centre/{centre}', 'InterventionController@allPatientsRelatives');
+// Route::get('urpa', 'UrpaController@index');
 
 // GET INFO QUIROFANS
-Route::get('info_per_quirofan/day/{day}', 'QuirofanController@infoQuirofans');
+// Route::get('info_per_quirofan/day/{day}', 'QuirofanController@infoQuirofans');
+Route::get('quirofans/day/{day}', 'QuirofanController@infoQuirofans');
 
-// CREATE FAKE INTERVENTION
-Route::get('create_intervention/{idQuirofan}/{startTime}', 'InterventionController@createIntervention');
-
-// DELETE INTERVENTION
-Route::get('delete_intervention/{Codi_procedim}', 'InterventionController@deleteIntervention');
-
-// RETRIEVE PATIENT
+// RETRIEVE PATIENTS
 Route::get('retrieve_patients/day/{day}/centre/{centre}', 'PatientController@retrievePatients');
 
-// TESTING
+// VARIABLES
 Route::get('variables', 'PatientController@getBoxURPA');
